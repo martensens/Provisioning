@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<unattend xmlns="urn:schemas-microsoft-com:unattend"
+          xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+
+  <!-- ============================= -->
+  <!-- WINDOWS PE -->
+  <!-- ============================= -->
+  <settings pass="windowsPE">
+
+    <component name="Microsoft-Windows-International-Core-WinPE"
+               processorArchitecture="amd64"
+               publicKeyToken="31bf3856ad364e35"
+               language="neutral"
+               versionScope="nonSxS">
+
+      <SetupUILanguage>
+        <UILanguage>en-US</UILanguage>
+      </SetupUILanguage>
+
+      <!-- Deutsche Tastatur -->
+      <InputLocale>0407:00000407</InputLocale>
+
+      <SystemLocale>en-US</SystemLocale>
+      <UILanguage>en-US</UILanguage>
+      <UserLocale>en-US</UserLocale>
+
+    </component>
+
+    <component name="Microsoft-Windows-Setup"
+               processorArchitecture="amd64"
+               publicKeyToken="31bf3856ad364e35"
+               language="neutral"
+               versionScope="nonSxS">
+
+      <UserData>
+        <AcceptEula>true</AcceptEula>
+      </UserData>
+
+      <!-- 🔥 IMAGE -->
+      <ImageInstall>
+        <OSImage>
+
+          <InstallFrom>
+            <MetaData wcm:action="add">
+              <Key>/IMAGE/INDEX</Key>
+              <Value>4</Value>
+            </MetaData>
+          </InstallFrom>
+
+          <!-- 🔥 UEFI DISK CONFIG -->
+          <InstallTo>
+            <DiskID>0</DiskID>
+            <PartitionID>3</PartitionID>
+          </InstallTo>
+
+          <WillShowUI>OnError</WillShowUI>
+
+        </OSImage>
+      </ImageInstall>
+
+      <!-- 🔥 WICHTIG: Partitionierung -->
+      <DiskConfiguration>
+        <Disk wcm:action="add">
+          <DiskID>0</DiskID>
+          <WillWipeDisk>true</WillWipeDisk>
+
+          <CreatePartitions>
+
+            <!-- EFI -->
+            <CreatePartition wcm:action="add">
+              <Order>1</Order>
+              <Type>EFI</Type>
+              <Size>100</Size>
+            </CreatePartition>
+
+            <!-- MSR -->
+            <CreatePartition wcm:action="add">
+              <Order>2</Order>
+              <Type>MSR</Type>
+              <Size>16</Size>
+            </CreatePartition>
+
+            <!-- Windows -->
+            <CreatePartition wcm:action="add">
+              <Order>3</Order>
+              <Type>Primary</Type>
+              <Extend>true</Extend>
+            </CreatePartition>
+
+          </CreatePartitions>
+
+          <ModifyPartitions>
+
+            <!-- EFI -->
+            <ModifyPartition wcm:action="add">
+              <Order>1</Order>
+              <PartitionID>1</PartitionID>
+              <Format>FAT32</Format>
+            </ModifyPartition>
+
+            <!-- Windows -->
+            <ModifyPartition wcm:action="add">
+              <Order>2</Order>
+              <PartitionID>3</PartitionID>
+              <Format>NTFS</Format>
+              <Letter>C</Letter>
+            </ModifyPartition>
+
+          </ModifyPartitions>
+
+        </Disk>
+      </DiskConfiguration>
+
+    </component>
+
+  </settings>
+
+  <!-- ============================= -->
+  <!-- SPECIALIZE -->
+  <!-- ============================= -->
+  <settings pass="specialize">
+
+    <component name="Microsoft-Windows-Shell-Setup"
+               processorArchitecture="amd64"
+               publicKeyToken="31bf3856ad364e35"
+               language="neutral"
+               versionScope="nonSxS">
+
+        <ComputerName>##SERVERNAME##</ComputerName>
+
+        <RegisteredOwner>Administrator</RegisteredOwner>
+
+        <RegisteredOrganization>Company</RegisteredOrganization>
+
+        <TimeZone>W. Europe Standard Time</TimeZone>
+
+    </component>
+
+  </settings>
+
+  <!-- ============================= -->
+  <!-- OOBE -->
+  <!-- ============================= -->
+  <settings pass="oobeSystem">
+
+    <component name="Microsoft-Windows-Shell-Setup"
+               processorArchitecture="amd64"
+               publicKeyToken="31bf3856ad364e35"
+               language="neutral"
+               versionScope="nonSxS">
+
+      <OOBE>
+        <HideEULAPage>true</HideEULAPage>
+        <HideWirelessSetupInOOBE>true</HideWirelessSetupInOOBE>
+        <NetworkLocation>Work</NetworkLocation>
+        <ProtectYourPC>1</ProtectYourPC>
+      </OOBE>
+
+      <!-- Admin Passwort -->
+      <UserAccounts>
+        <AdministratorPassword>
+          <Value>##ADMINPASSWORD##</Value>
+          <PlainText>true</PlainText>
+        </AdministratorPassword>
+      </UserAccounts>
+
+    </component>
+
+  </settings>
+
+</unattend>

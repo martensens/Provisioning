@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>VM Portal</title>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-light">
+
+<div class="container mt-5">
+    <div class="card shadow p-4">
+
+        <h2 class="mb-4">Create VM</h2>
+
+        <!-- Servername -->
+        <label class="form-label">Servername</label>
+        <input class="form-control" id="vmname" placeholder="z.B. APP-01">
+
+        <!-- CPU Cores -->
+        <label class="form-label mt-3">CPU Cores</label>
+        <select class="form-select" id="cores">
+            <option value="1">1 Core</option>
+            <option value="2">2 Cores</option>
+            <option value="4">4 Cores</option>
+            <option value="6">6 Cores</option>
+        </select>
+
+        <!-- RAM -->
+        <label class="form-label mt-3">RAM</label>
+        <select class="form-select" id="ram">
+            <option value="2">2 GB</option>
+            <option value="4">4 GB</option>
+            <option value="6">6 GB</option>
+            <option value="8">8 GB</option>
+        </select>
+
+        <!-- Disk -->
+        <label class="form-label mt-3">Disk Size</label>
+        <select class="form-select" id="disk">
+            <option value="40">40 GB</option>
+            <option value="60">60 GB</option>
+            <option value="80">80 GB</option>
+        </select>
+
+        <!-- Passwort -->
+        <label class="form-label mt-3">Admin Passwort</label>
+        <input 
+            type="password"
+            class="form-control"
+            id="password"
+            placeholder="Passwort eingeben"
+        >
+
+        <!-- Passwort bestätigen -->
+        <label class="form-label mt-3">Admin Passwort bestätigen</label>
+        <input 
+            type="password"
+            class="form-control"
+            id="passwordConfirm"
+            placeholder="Passwort bestätigen"
+        >
+
+        <!-- Fehlermeldung -->
+        <div id="errorMessage" class="text-danger mt-3"></div>
+
+        <!-- Button -->
+        <button class="btn btn-primary mt-4 w-100" onclick="deploy()">
+            Deploy VM
+        </button>
+
+    </div>
+</div>
+
+<script>
+
+async function deploy() {
+
+    const password = document.getElementById('password').value;
+    const passwordConfirm = document.getElementById('passwordConfirm').value;
+
+    const errorDiv = document.getElementById('errorMessage');
+
+    // Fehlermeldung zurücksetzen
+    errorDiv.innerText = '';
+
+    // Passwort prüfen
+    if (password !== passwordConfirm) {
+        errorDiv.innerText = 'Die Passwörter stimmen nicht überein.';
+        return;
+    }
+
+    // JSON Payload
+    const data = {
+
+        VMName: document.getElementById('vmname').value,
+        Cores: document.getElementById('cores').value,
+        RAM: document.getElementById('ram').value,
+        DiskSize: document.getElementById('disk').value,
+        AdminPassword: password
+
+    };
+
+    try {
+
+        const response = await fetch('/deploy', {
+
+            method: 'POST',
+
+            headers: {
+                'Content-Type': 'application/json'
+            },
+
+            body: JSON.stringify(data)
+
+        });
+
+        const result = await response.json();
+
+        alert(result.status);
+
+    } catch (error) {
+
+        errorDiv.innerText = 'Fehler beim Deployment.';
+
+        console.error(error);
+    }
+}
+
+</script>
+
+</body>
+</html>
